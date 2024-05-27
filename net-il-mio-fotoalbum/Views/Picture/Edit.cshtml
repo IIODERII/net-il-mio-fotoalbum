@@ -42,11 +42,10 @@
             </div>
             <div class="form-group form-check mb-3">
                 <label class="form-check-label">
-                    <input @(Model.Picture.Visible ? "checked" : "") class="form-check-input" asp-for="Picture.Visible" /> Visibile
+                    <input checked="@Model.Picture.Visible" class="form-check-input" asp-for="Picture.Visible" /> Visibile
                 </label>
             </div>
             <div class="form-field mb-3">
-                <img src="@Model.Picture.ImgSrc">
                 <label asp-for="ImageFormFile">Foto</label>
                 <input value="@Model.Picture.Image" accept="image/*" type="file" asp-for="ImageFormFile" />
                 <span asp-validation-for="ImageFormFile" class="text-danger"></span>
@@ -73,7 +72,7 @@
                 <span asp-validation-for="SelectedCategories" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Modifica" class="btn btn-primary" />
             </div>
         </form>
     </div>

@@ -156,7 +156,7 @@ namespace net_il_mio_fotoalbum.Controllers
 
                 if (p != null)
                 {
-                    p.Title = data.Picture.Description;
+                    p.Title = data.Picture.Title;
                     p.Description = data.Picture.Description;
                     if (data.ImageFormFile != null && data.ImageFormFile.Length > 0)
                     {
@@ -167,6 +167,7 @@ namespace net_il_mio_fotoalbum.Controllers
                         }
                     }
                     p.Image = data.Picture.Image;
+                    p.Visible = data.Picture.Visible;
                     p.Categories.Clear();
                     if (data.SelectedCategories != null)
                     {
@@ -179,11 +180,29 @@ namespace net_il_mio_fotoalbum.Controllers
                     }
 
                     db.SaveChanges();
-                    return View("Index");
+                    return RedirectToAction("Index");
                 }
 
             }
             return NotFound();
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            using (var db = new PictureContext())
+            {
+                Picture toDelete = db.Pictures.Where(p => p.Id == id).FirstOrDefault();
+
+                if (toDelete != null)
+                {
+                    db.Pictures.Remove(toDelete);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+
+                return NotFound();
+            }
         }
     }
 }

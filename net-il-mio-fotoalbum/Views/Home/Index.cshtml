@@ -1,8 +1,232 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<body>
+    <div class="container text-center">
+        <h1>La Galleria</h1>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+        <input id="filter" onkeyup="searchFiltered()" class="form-control mb-5 w-75 mx-auto" type="text" placeholder="Cerca..." onchange="filter" />
+        <button class="btn btn-primary mb-3" onclick="openForm()">Scrivici</button>
+        <div class="loading d-flex justify-content-center align-items-ceter" style="min-height : 80vh; margin-top: 10em">
+            <div class="text-center">
+                <i class="fa-solid fa-spinner fa-spin fs-1"></i>
+                <h2>Caricamento...</h2>
+            </div>
+        </div>
+        <div class="error text-center d-none">
+            <h2>Si è verificato un errore</h2>
+            <button class="mx-auto btn btn-danger" onclick="window.location.reload();">Riprova</button>
+        </div>
+        <div class="row py-3 g-4">
+        </div>
+
+        <div class="overlay d-flex justify-content-center align-items-center" style="position: relative; top: 0; bottom: 0; left: 0; right: 0; background-color: rgba(0, 0, 0, 0.4); opacity: 0;">
+            <div class="show w-50 rounded-3" style="transition: all 0.5s ease; scale: 0; background-color: #fff">
+                <div onclick="closeShow()" class="p-3 text-start" style="cursor: pointer"><i class="fa-solid fa-x"></i></div>
+                <div class="show-loading d-flex justify-content-center align-items-ceter" style="min-height : 80vh; margin-top: 10em">
+                    <div class="text-center">
+                        <i class="fa-solid fa-spinner fa-spin fs-1"></i>
+                        <h2>Caricamento...</h2>
+                    </div>
+                </div>
+                <div class="show-content">
+                </div>
+            </div>
+        </div>
+
+        <div class="overlay-form d-flex justify-content-center align-items-center" style="position: relative; top: 0; bottom: 0; left: 0; right: 0; background-color: rgba(0, 0, 0, 0.4); opacity: 0;">
+            <div class="form w-50 rounded-3" style="transition: all 0.5s ease; scale: 0; background-color: #fff">
+                <div onclick="closeForm()" class="p-3 text-start" style="cursor: pointer"><i class="fa-solid fa-x"></i></div>
+                <div>
+                    <form id="form" class="p-4">
+                        <label for="name">Email:</label>
+                        <input class="form-control" type="email" id="email" name="email" required><br><br>
+
+                        <label for="description">Messaggio:</label>
+                        <textarea class="form-control" id="message" name="message" required></textarea><br><br>
+
+                        <button class="btn btn-success" type="submit">Invia</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        let immagini;
+        const container = document.querySelector(".row");
+        let activeId;
+        let activePicture;
+        const loading = document.querySelector(".loading");
+        const form = document.getElementById("form");
+
+        form.addEventListener("submit", SendMessage);
+
+        function SendMessage(event) {
+            event.preventDefault();
+
+            axios.post("https://localhost:7161/Api/saveMessage", {
+                Email: event.target[0].value,
+                Text: event.target[1].value
+            })
+            .then(response => {
+                    console.log("Messaggio inviato con successo:", response.data);
+                closeForm();
+            })
+            .catch(error => {
+                    console.error("Errore nell'invio del messaggio:", error);
+                });
+        }
+
+        axios.get("https://localhost:7161/Api/GetAllPictures").then(res => {
+            console.log(res.data)
+            immagini = res.data;
+            changeCards();
+        }).catch(function (error) {
+            console.log(error)
+            document.querySelector(".error").classList.remove("d-none");
+        }).finally(function () {
+            loading.classList.add("d-none");
+        });
+
+        function changeCards() {
+            container.innerHTML = "";
+            immagini.forEach((p) => {
+                const cardContainer = document.createElement('div');
+                cardContainer.className = 'card-container col-4 px-3';
+                cardContainer.style.position = 'relative';
+
+                const cardBody = document.createElement('div');
+                cardBody.classList.add('card-body');
+
+                const cardImage = document.createElement('div');
+                cardImage.classList.add('card-image');
+                cardImage.style = 'position: relative; overflow: hidden';
+
+                const image = document.createElement('img');
+                image.src = p.imgSrc;
+                image.classList.add("w-100")
+                image.alt = `${p.title}`;
+
+                const cardText = document.createElement('div');
+                cardText.classList.add('card-text');
+
+                const cardTitle = document.createElement('h3');
+                cardTitle.classList.add('card-title');
+                cardTitle.innerHTML = p.title
+
+                const cardDescription = document.createElement('p');
+                cardDescription.classList.add('card-description');
+                cardDescription.innerHTML = p.description.length > 20 ?
+                    `${p.description.substring(0, 20)}...` : `${p.description}`;
+
+                const show = document.createElement('button');
+                show.className = 'btn btn-success';
+                show.innerText = 'Mostra';
+                show.addEventListener("click", function () {
+                    activeId = p.id;
+                    openShow();
+                });
+
+                cardText.appendChild(cardTitle);
+                cardText.appendChild(cardDescription);
+                cardText.appendChild(show);
+
+                cardImage.appendChild(image);
+                cardBody.appendChild(cardImage);
+                cardBody.appendChild(cardText);
+
+                cardBody.style.border = "solid 1px #ccc"
+                cardBody.style.height = "100%"
+
+                cardContainer.appendChild(cardBody);
+
+                container.appendChild(cardContainer);
+            })
+        }
+
+        function openShow() {
+            document.querySelector(".overlay").style.opacity = 1;
+            document.querySelector(".overlay").style.position = "absolute";
+            document.querySelector(".show").style.scale = 1;
+            axios.get(`https://localhost:7161/Api/GetPictureById?id=${activeId}`).then(res => {
+                activePicture = res.data[0];
+                console.log(activePicture);
+                document.querySelector(".show-loading").classList.add('d-none');
+
+                const cardContainer = document.createElement('div');
+                cardContainer.className = 'card-container px-3';
+                cardContainer.style.position = 'relative';
+
+                const cardBody = document.createElement('div');
+                cardBody.classList.add('card-body');
+
+                const cardImage = document.createElement('div');
+                cardImage.classList.add('card-image');
+                cardImage.style = 'position: relative; overflow: hidden';
+
+                const image = document.createElement('img');
+                image.src = `${activePicture.imgSrc}`;
+                image.classList.add("w-100")
+                image.alt = `${activePicture.title}`;
+
+                const cardText = document.createElement('div');
+                cardText.classList.add('card-text');
+
+                const cardTitle = document.createElement('h3');
+                cardTitle.classList.add('card-title');
+                cardTitle.innerHTML = activePicture.title;
+
+                const cardDescription = document.createElement('p');
+                cardDescription.classList.add('card-description');
+                cardDescription.innerHTML = activePicture.description.length > 100 ?
+                    `${activePicture.description.substring(0, 100)}...` : `${activePicture.description}`;
+
+                cardText.appendChild(cardTitle);
+                cardText.appendChild(cardDescription);
+
+                cardImage.appendChild(image);
+                cardBody.appendChild(cardImage);
+                cardBody.appendChild(cardText);
+
+                cardContainer.appendChild(cardBody);
+
+                document.querySelector(".show-content").appendChild(cardContainer);
+            }).catch(function (error) {
+                console.log(error)
+            });
+        }
+
+        function closeShow() {
+            document.querySelector(".overlay").style.opacity = 0;
+            document.querySelector(".overlay").style.position = "relative";
+            document.querySelector(".show").style.scale = 0;
+            document.querySelector(".show-content").innerHTML = "";
+        }
+
+        function closeForm() {
+            document.querySelector(".overlay-form").style.opacity = 0;
+            document.querySelector(".overlay-form").style.position = "relative";
+            document.querySelector(".form").style.scale = 0;
+        }
+
+        function openForm() {
+            document.querySelector(".overlay-form").style.opacity = 1;
+            document.querySelector(".overlay-form").style.position = "absolute";
+            document.querySelector(".form").style.scale = 1; // Corretto da .-form a .form
+        }
+
+        function searchFiltered() {
+            loading.classList.remove("d-none");
+            const text = document.getElementById("filter");
+            axios.get(`https://localhost:7161/Api/GetAllPictures?name=${text.value}`).then(res => {
+                immagini = res.data;
+                changeCards();
+            }).catch(function (error) {
+                console.log(error)
+                document.querySelector(".error").classList.remove("d-none");
+            }).finally(function () {
+                loading.classList.add("d-none");
+            });
+        }
+
+    </script>
+
+</body>
