@@ -1,0 +1,62 @@
+﻿@using la_mia_pizzeria_static.Models
+@model PictureFormModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Crea nuova Foto</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <form asp-controller="Picture" method="post" asp-action="Create" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Picture.Title" class="control-label">Titolo</label>
+                <input asp-for="Picture.Title" class="form-control" />
+                <span asp-validation-for="Picture.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Picture.Description" class="control-label">Descrizione</label>
+                <input asp-for="Picture.Description" class="form-control" />
+                <span asp-validation-for="Picture.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check mb-3">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Picture.Visible" /> Visibile
+                </label>
+            </div>
+            <div class="form-field mb-3">
+                <img src="@Model.Picture.ImgSrc">
+                <label asp-for="ImageFormFile">Foto</label>
+                <input accept="image/*" type="file" asp-for="ImageFormFile" />
+                <span asp-validation-for="ImageFormFile" class="text-danger"></span>
+
+            </div>
+            <div class="mb-3">
+                <strong>Categorie:</strong>
+                <select asp-for="SelectedCategories"
+                        multiple="multiple"
+                        size="10"
+                        class="form-select mb-2 mr-sm-2 ml-sm-3 leftList"
+                        asp-items="@Model.Categories">
+                </select>
+                <span asp-validation-for="SelectedCategories" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Torna alla lista</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

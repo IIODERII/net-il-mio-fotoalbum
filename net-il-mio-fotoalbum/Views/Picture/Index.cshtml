@@ -1,0 +1,62 @@
+﻿@using la_mia_pizzeria_static.Models
+@model List<Picture>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div class="container">
+    <div class="row g-3"> 
+        @foreach(var p in Model)
+        {
+            <div class="col-4">
+                <div class="card h-100">
+                    <div style="height: 300px" class="bg-secondary">
+                        <img src="@p.ImgSrc" class="card-img-top w-100 h-100" style="object-fit: contain; object-position: center center" alt="@p.Title">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Title</h5>
+                        <p class="card-text">@(p.Description.Length > 20 ? $"{p.Description.Substring(20)}" : p.Description)</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fs-2 fa-solid fa-eye@(p.Visible ? "" : "-slash")"></i>
+                            </div>
+                            <div>
+                                <a href="@Url.Action("Show", "Picture", new { id = p.Id })" class="btn btn-primary"><i class="fa-solid fa-eye"></i></a>
+                                <a href="@Url.Action("Edit", "Picture", new { id = p.Id })" class="btn btn-success"><i class="fa-solid fa-pencil"></i></a>
+                                <button data-bs-toggle="modal" data-bs-target="#DeleteModal-@p.Id" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                            <div class="modal fade" id="DeleteModal-@p.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" style="background-color: #fff3cd">
+                                    <div class="modal-content" style="background-color: #fff3cd">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Attenzione!!</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Sei sicuro di voler eliminare <strong>@p.Title</strong>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                                            <form asp-controller="Pizza" asp-action="Delete" asp-route-id="@p.Id" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger">Elimina</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
