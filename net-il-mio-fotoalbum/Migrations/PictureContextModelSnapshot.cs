@@ -34,7 +34,7 @@ namespace net_il_mio_fotoalbum.Migrations
 
                     b.HasIndex("PicturesId");
 
-                    b.ToTable("CategoryPicture");
+                    b.ToTable("CategoryPicture", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -249,7 +249,7 @@ namespace net_il_mio_fotoalbum.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("la_mia_pizzeria_static.Models.Picture", b =>
@@ -277,7 +277,7 @@ namespace net_il_mio_fotoalbum.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pictures");
+                    b.ToTable("Pictures", (string)null);
                 });
 
             modelBuilder.Entity("net_il_mio_fotoalbum.Models.Message", b =>
@@ -298,7 +298,7 @@ namespace net_il_mio_fotoalbum.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("CategoryPicture", b =>

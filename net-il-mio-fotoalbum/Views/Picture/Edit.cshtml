@@ -23,7 +23,6 @@
 }
 
 <h1>Crea nuova Foto</h1>
-
 <hr />
 <div class="row">
     <div class="col-md-8 mx-auto">
@@ -47,7 +46,7 @@
             </div>
             <div class="form-field mb-3">
                 <label asp-for="ImageFormFile">Foto</label>
-                <input value="@Model.Picture.Image" accept="image/*" type="file" asp-for="ImageFormFile" />
+                <input value="@Model.Picture.Image. accept="image/*" type="file" asp-for="ImageFormFile" />
                 <span asp-validation-for="ImageFormFile" class="text-danger"></span>
 
             </div>
@@ -87,4 +86,5 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
 

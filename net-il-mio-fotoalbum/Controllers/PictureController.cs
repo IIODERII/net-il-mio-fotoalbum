@@ -166,7 +166,9 @@ namespace net_il_mio_fotoalbum.Controllers
                             data.Picture.Image = memoryStream.ToArray();
                         }
                     }
-                    p.Image = data.Picture.Image;
+                    if(data.Picture.Image != null)
+                         p.Image = data.Picture.Image;
+
                     p.Visible = data.Picture.Visible;
                     p.Categories.Clear();
                     if (data.SelectedCategories != null)
